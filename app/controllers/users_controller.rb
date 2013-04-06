@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
 
   before_filter :signed_in_user, only: [:index, :edit, :update, :destroy]
+  before_filter :guest_user, only: [:new, :create]
   before_filter :correct_user, only: [:edit, :update]
   before_filter :admin_user, only: :destroy
 
@@ -43,12 +44,23 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    User.find(params[:id]).destroy
-    flash[:success] = "User detroyed."
+    user = User.find(params[:id])
+    if current_user == user
+      # Can't destroy own user
+      flash[:error] = "Can not delete your own admin account!"
+    else
+      # Destroy user
+      user.delete
+      flash[:success] = "User detroyed."
+    end
     redirect_to users_url
   end
 
   private
+
+    def guest_user
+      redirect_to root_path if signed_in?
+    end
 
     def signed_in_user
       unless signed_in?

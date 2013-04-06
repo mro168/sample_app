@@ -51,11 +51,23 @@ describe "UserPages" do
   end
 
   describe "signup page" do
-    before { visit signup_path }
 
-    it { should have_selector('h1',    text: "Sign up") }
-    it { should have_selector('title', text: full_title('Sign up')) }
+    describe "sign up as guest" do
+      before { visit signup_path }
 
+      it { should have_selector('h1',    text: "Sign up") }
+      it { should have_selector('title', text: full_title('Sign up')) }
+    end
+
+    describe "sign up as logged in user" do
+      let(:user) { FactoryGirl.create(:user) }
+      before do
+        sign_in user
+        get signup_path
+      end
+
+      specify { response.should redirect_to(root_path) }
+    end
   end
 
   describe "profile page" do
@@ -89,7 +101,7 @@ describe "UserPages" do
         fill_in "Name",         with: "Example User"
         fill_in "Email",        with: "user@example.com"
         fill_in "Password",     with: "foobar"
-        fill_in "Confirmation", with: "foobar"
+        fill_in "Confirm Password", with: "foobar"
       end
 
       it "should create a user" do

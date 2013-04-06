@@ -18,6 +18,14 @@ describe "StaticPages" do
     it_should_behave_like "all static pages"
     it { should_not have_selector('title', text: '| Home') }
 
+    describe "Menu link" do
+
+      describe "For non signed in user" do
+        it { should_not have_link('Profile') }
+        it { should_not have_link('Settings') }
+      end
+    end
+
   end
 
   describe "Help page" do
