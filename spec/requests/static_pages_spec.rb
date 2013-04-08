@@ -40,6 +40,32 @@ describe "StaticPages" do
           page.should have_selector("li##{item.id}", text: item.content)
         end
       end
+
+      describe "micropost count multiple" do
+        it { should have_content "#{user.feed.count} microposts" }
+      end
+
+      describe "micropost count single" do
+        before do
+          user.feed.first.destroy
+          visit root_path
+        end
+
+        it { should have_content "#{user.feed.count} micropost" }
+        it { should_not have_content "#{user.feed.count} microposts" }
+      end
+
+      describe "pagination" do
+
+        before(:all) { 31.times { FactoryGirl.create(:micropost, user: user) } }
+        after(:all) { user.feed.delete_all }
+
+        it "should list each feed" do
+          user.feed.paginate(page: 1).each do |feed|
+            page.should have_selector('li', text: feed.content)
+          end
+        end
+      end
     end
   end
 
