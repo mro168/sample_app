@@ -17,13 +17,20 @@ SampleApp::Application.routes.draw do
   get "static_pages/contact"
 
   # Users
-  resources :users
+  resources :users do
+    member do
+      get :following, :followers
+    end
+  end
 
   # Sessions
   resources :sessions, only: [:new, :create, :destroy]
 
   # Microposts
   resources :microposts, only: [:create, :destroy]
+
+  # Relationships
+  resources :relationships, only: [:create, :destroy]
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
